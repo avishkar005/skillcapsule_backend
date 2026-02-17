@@ -8,5 +8,8 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/target/skillcapsule-0.0.1-SNAPSHOT.jar app.jar
+
+# Render uses PORT env variable
 EXPOSE 8080
+
 ENTRYPOINT ["java", "-jar", "app.jar"]
