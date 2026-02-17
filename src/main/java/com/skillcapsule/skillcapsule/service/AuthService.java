@@ -23,11 +23,10 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final EmailService emailService;
 
-    // ✅ REGISTER
+    // REGISTER
     public AuthResponse register(RegisterRequest request) {
 
-        // 🔒 CHECK DUPLICATE EMAIL (THIS WAS MISSING)
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already registered");
         }
 
@@ -37,29 +36,28 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setProvider("LOCAL");
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         UserDetails userDetails =
                 org.springframework.security.core.userdetails.User
-                        .withUsername(user.getEmail())
-                        .password(user.getPassword())
+                        .withUsername(savedUser.getEmail())
+                        .password(savedUser.getPassword())
                         .authorities("USER")
                         .build();
 
         String token = jwtUtil.generateToken(userDetails);
 
-        // ✅ Send welcome email
-        emailService.sendWelcomeEmail(user.getEmail(), user.getName());
+        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName());
 
         return new AuthResponse(
                 token,
-                user.getId(),
-                user.getName(),
-                user.getEmail()
+                savedUser.getId(),
+                savedUser.getName(),
+                savedUser.getEmail()
         );
     }
 
-    // ✅ LOGIN
+    // LOGIN
     public AuthResponse login(LoginRequest request) {
 
         authenticationManager.authenticate(
@@ -80,8 +78,6 @@ public class AuthService {
                         .build();
 
         String token = jwtUtil.generateToken(userDetails);
-
-        emailService.sendWelcomeEmail(user.getEmail(), user.getName());
 
         return new AuthResponse(
                 token,
