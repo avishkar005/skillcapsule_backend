@@ -1,8 +1,10 @@
 package com.skillcapsule.skillcapsule.entity;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
@@ -15,8 +17,13 @@ public class User {
     private String id;
 
     private String name;
+
+    @Indexed(unique = true)
     private String email;
+
     private String password;
+
     private String avatar;
-    private String provider;
+
+    private String provider = "LOCAL";
 }

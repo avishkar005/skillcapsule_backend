@@ -1,5 +1,4 @@
 package com.skillcapsule.skillcapsule.service;
-
 import com.skillcapsule.skillcapsule.config.JwtUtil;
 import com.skillcapsule.skillcapsule.dto.AuthResponse;
 import com.skillcapsule.skillcapsule.dto.LoginRequest;
@@ -9,7 +8,6 @@ import com.skillcapsule.skillcapsule.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +19,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    private final EmailService emailService;
 
     // REGISTER
     public AuthResponse register(RegisterRequest request) {
@@ -38,16 +35,7 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        UserDetails userDetails =
-                org.springframework.security.core.userdetails.User
-                        .withUsername(savedUser.getEmail())
-                        .password(savedUser.getPassword())
-                        .authorities("USER")
-                        .build();
-
-        String token = jwtUtil.generateToken(userDetails);
-
-        emailService.sendWelcomeEmail(savedUser.getEmail(), savedUser.getName());
+        String token = jwtUtil.generateToken(savedUser.getEmail());
 
         return new AuthResponse(
                 token,
@@ -70,14 +58,7 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        UserDetails userDetails =
-                org.springframework.security.core.userdetails.User
-                        .withUsername(user.getEmail())
-                        .password(user.getPassword())
-                        .authorities("USER")
-                        .build();
-
-        String token = jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateToken(user.getEmail());
 
         return new AuthResponse(
                 token,
