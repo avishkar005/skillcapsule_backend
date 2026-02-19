@@ -18,11 +18,16 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser(
+    public ResponseEntity<?> getCurrentUser(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return ResponseEntity.ok(
-                userService.getUserByEmail(userDetails.getUsername())
-        );
+
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+
+        User user = userService.getUserByEmail(userDetails.getUsername());
+
+        return ResponseEntity.ok(user);
     }
 }

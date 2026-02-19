@@ -3,7 +3,6 @@ package com.skillcapsule.skillcapsule.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -23,22 +22,17 @@ public class JwtUtil {
     private static final long JWT_EXPIRATION_MS = 1000 * 60 * 60 * 24; // 24 hours
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(
-                java.util.Base64.getEncoder().encodeToString(SECRET_KEY.getBytes())
-        );
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
     // =======================
     // TOKEN GENERATION
     // =======================
 
-    // ✅ For LOCAL login
     public String generateToken(UserDetails userDetails) {
         return createToken(new HashMap<>(), userDetails.getUsername());
     }
 
-    // ✅ For GOOGLE OAuth
     public String generateToken(String email) {
         return createToken(new HashMap<>(), email);
     }
