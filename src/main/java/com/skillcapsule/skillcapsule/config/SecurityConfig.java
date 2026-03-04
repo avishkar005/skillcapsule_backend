@@ -46,10 +46,7 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "https://skillcapsule-frontend-17j1.vercel.app"
-        ));
+        config.setAllowedOriginPatterns(List.of("*")); // allows Vercel domains
 
         config.setAllowedMethods(List.of(
                 "GET",
@@ -60,7 +57,6 @@ public class SecurityConfig {
         ));
 
         config.setAllowedHeaders(List.of("*"));
-
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
@@ -70,7 +66,6 @@ public class SecurityConfig {
 
         return source;
     }
-
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration
