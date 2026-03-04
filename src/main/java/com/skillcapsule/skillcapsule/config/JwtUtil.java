@@ -1,5 +1,4 @@
 package com.skillcapsule.skillcapsule.config;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,11 +23,6 @@ public class JwtUtil {
     private Key getSignInKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
-
-    // =======================
-    // TOKEN GENERATION
-    // =======================
-
     public String generateToken(UserDetails userDetails) {
         return createToken(new HashMap<>(), userDetails.getUsername());
     }
@@ -46,10 +40,6 @@ public class JwtUtil {
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
-
-    // =======================
-    // TOKEN VALIDATION
-    // =======================
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
