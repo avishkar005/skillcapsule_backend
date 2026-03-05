@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
 
-                // OAuth needs session temporarily
+                // OAuth requires temporary session
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
@@ -45,6 +45,17 @@ public class SecurityConfig {
                 )
 
                 .oauth2Login(oauth -> oauth
+
+                        // Google login endpoint
+                        .authorizationEndpoint(endpoint ->
+                                endpoint.baseUri("/oauth2/authorization")
+                        )
+
+                        // Google redirect endpoint
+                        .redirectionEndpoint(endpoint ->
+                                endpoint.baseUri("/login/oauth2/code/*")
+                        )
+
                         .successHandler(oAuth2SuccessHandler)
                 )
 
@@ -61,7 +72,10 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedOrigins(List.of(
+                "https://skillcapsule-frontend-17j1.vercel.app",
+                "http://localhost:5173"
+        ));
 
         config.setAllowedMethods(List.of(
                 "GET",
